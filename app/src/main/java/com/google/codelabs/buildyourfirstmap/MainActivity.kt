@@ -8,7 +8,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.codelabs.buildyourfirstmap.place.Place
 import com.google.codelabs.buildyourfirstmap.place.PlaceRenderer
 import com.google.codelabs.buildyourfirstmap.place.PlacesReader
@@ -43,26 +42,6 @@ class MainActivity : AppCompatActivity() {
                 val bounds = LatLngBounds.builder()
                 places.forEach { bounds.include(it.latLng) }
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
-            }
-        }
-    }
-
-    /**
-     * Добавляет маркерные представления списка мест на предоставленном объекте GoogleMap.
-     */
-    private fun addMarkers(googleMap: GoogleMap) {
-        places.forEach { place ->
-            val marker = googleMap.addMarker(
-                MarkerOptions()
-                    .title(place.name)
-                    .position(place.latLng)
-                    .icon(bicycleIcon)
-            )
-
-            // Set place as the tag on the marker object so it can be referenced within
-            // MarkerInfoWindowAdapter
-            if (marker != null) {
-                marker.tag = place
             }
         }
     }
