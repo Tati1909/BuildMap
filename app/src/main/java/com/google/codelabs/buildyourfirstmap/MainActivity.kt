@@ -3,9 +3,11 @@ package com.google.codelabs.buildyourfirstmap
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.codelabs.buildyourfirstmap.place.Place
 import com.google.codelabs.buildyourfirstmap.place.PlaceRenderer
@@ -32,11 +34,16 @@ class MainActivity : AppCompatActivity() {
         ) as? SupportMapFragment
 
         mapFragment?.getMapAsync { googleMap ->
-            //addMarkers(googleMap)
             addClusteredMarkers(googleMap)
 
-            // Set custom info window adapter.
-            // googleMap.setInfoWindowAdapter(MarkerInfoWindowAdapter(this))
+            /**
+             * настройка вида камеры, чтобы он сразу инициализировался в Сан-Франциско при запуске приложения
+             */
+            googleMap.setOnMapLoadedCallback {
+                val bounds = LatLngBounds.builder()
+                places.forEach { bounds.include(it.latLng) }
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
+            }
         }
     }
 
@@ -80,10 +87,25 @@ class MainActivity : AppCompatActivity() {
         clusterManager.addItems(places)
         clusterManager.cluster()
 
-        // Set ClusterManager as the OnCameraIdleListener so that it
-        // can re-cluster when zooming in and out.
+        /**
+         * при движении карты маркеры становятся от полупрозрачных до непрозрачных
+         */
         googleMap.setOnCameraIdleListener {
+            // When the camera stops moving, change the alpha value back to opaque.
+            clusterManager.markerCollection.markers.forEach { it.alpha = 1.0f }
+            clusterManager.clusterMarkerCollection.markers.forEach { it.alpha = 1.0f }
+
+            // Call clusterManager.onCameraIdle() when the camera stops moving so that reclustering
+            // can be performed when the camera stops moving.
             clusterManager.onCameraIdle()
         }
+        /**
+         * при движении карты маркеры становятся полупрозрачными
+         */
+        googleMap.setOnCameraMoveStartedListener {
+            clusterManager.markerCollection.markers.forEach { it.alpha = 0.3f }
+            clusterManager.clusterMarkerCollection.markers.forEach { it.alpha = 0.3f }
+        }
+
     }
 }
