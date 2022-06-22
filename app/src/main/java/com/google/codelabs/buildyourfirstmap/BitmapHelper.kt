@@ -15,8 +15,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 object BitmapHelper {
     /**
-     * Demonstrates converting a [Drawable] to a [BitmapDescriptor], for use as a marker icon.
-     * Taken from ApiDemos on GitHub: https://github.com/googlemaps/android-samples/blob/master/ApiDemos/kotlin/app/src/main/java/com/example/kotlindemos/MarkerDemoActivity.kt
+    Этот метод принимает идентификатор ресурса, который можно нарисовать,
+    а также целое число цвета и создает его представление BitmapDescriptor .
      */
     fun vectorToBitmap(context: Context, @DrawableRes id: Int, @ColorInt color: Int): BitmapDescriptor {
         val vectorDrawable = ResourcesCompat.getDrawable(context.resources, id, null)
