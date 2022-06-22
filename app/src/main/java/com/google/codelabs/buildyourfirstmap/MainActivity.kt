@@ -8,7 +8,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.codelabs.buildyourfirstmap.place.Place
+import com.google.codelabs.buildyourfirstmap.place.PlaceRenderer
 import com.google.codelabs.buildyourfirstmap.place.PlacesReader
+import com.google.maps.android.clustering.ClusterManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,9 +32,11 @@ class MainActivity : AppCompatActivity() {
         ) as? SupportMapFragment
 
         mapFragment?.getMapAsync { googleMap ->
-            addMarkers(googleMap)
-            // Set custom info window adapter
-            googleMap.setInfoWindowAdapter(MarkerInfoWindowAdapter(this))
+            //addMarkers(googleMap)
+            addClusteredMarkers(googleMap)
+
+            // Set custom info window adapter.
+            // googleMap.setInfoWindowAdapter(MarkerInfoWindowAdapter(this))
         }
     }
 
@@ -53,6 +57,33 @@ class MainActivity : AppCompatActivity() {
             if (marker != null) {
                 marker.tag = place
             }
+        }
+    }
+
+    /**
+     * Добавляет кластерные маркеры на предоставленном объекте GoogleMap.
+     */
+    private fun addClusteredMarkers(googleMap: GoogleMap) {
+        // Create the ClusterManager class and set the custom renderer.
+        val clusterManager = ClusterManager<Place>(this, googleMap)
+        clusterManager.renderer =
+            PlaceRenderer(
+                this,
+                googleMap,
+                clusterManager
+            )
+
+        // Set custom info window adapter
+        clusterManager.markerCollection.setInfoWindowAdapter(MarkerInfoWindowAdapter(this))
+
+        // Add the places to the ClusterManager.
+        clusterManager.addItems(places)
+        clusterManager.cluster()
+
+        // Set ClusterManager as the OnCameraIdleListener so that it
+        // can re-cluster when zooming in and out.
+        googleMap.setOnCameraIdleListener {
+            clusterManager.onCameraIdle()
         }
     }
 }
