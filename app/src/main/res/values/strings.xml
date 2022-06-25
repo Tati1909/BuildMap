@@ -1,4 +1,7 @@
 <resources>
-  <string name="app_name">MapGoogle</string>
-  <string name="map_id">e2cf372aa8bc4fa</string>
+    <string name="app_name">MapGoogle</string>
+    <string name="map_id">e2cf372aa8bc4fa</string>
+    <string name="geolocation">Geolocation</string>
+    <string name="button_search_map">Поиск</string>
+    <string name="marker_start">Start</string>
 </resources>
